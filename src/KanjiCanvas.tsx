@@ -20,6 +20,23 @@ export default function KanjiCanvas() {
         canvas.width = 300;
         canvas.height = 300;
         drawGrid(ctx);
+        const canvasCurrent = canvasRef.current;
+        if (!canvasCurrent) return;
+
+        const preventDefault = (e: TouchEvent) => e.preventDefault();
+
+        // Prevent scrolling when touching the canvas
+        canvasCurrent.addEventListener("touchstart", preventDefault, {
+            passive: false,
+        });
+        canvasCurrent.addEventListener("touchmove", preventDefault, {
+            passive: false,
+        });
+
+        return () => {
+            canvasCurrent.removeEventListener("touchstart", preventDefault);
+            canvasCurrent.removeEventListener("touchmove", preventDefault);
+        };
     }, []);
 
     useEffect(() => {
@@ -55,7 +72,11 @@ export default function KanjiCanvas() {
         return { x, y };
     };
 
-    const startDraw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const startDraw = (
+        e:
+            | React.MouseEvent<HTMLCanvasElement>
+            | React.TouchEvent<HTMLCanvasElement>
+    ) => {
         const pos = getPos(e);
         setPoints([pos]);
         setIsDrawing(true);
@@ -66,7 +87,11 @@ export default function KanjiCanvas() {
         setPoints([]);
     };
 
-    const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const draw = (
+        e:
+            | React.MouseEvent<HTMLCanvasElement>
+            | React.TouchEvent<HTMLCanvasElement>
+    ) => {
         if (!isDrawing) return;
         const ctx = canvasRef.current!.getContext("2d")!;
         const pos = getPos(e);
