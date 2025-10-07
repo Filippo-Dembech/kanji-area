@@ -55,7 +55,7 @@ export default function KanjiCanvas() {
         return { x, y };
     };
 
-    const startDraw = (e) => {
+    const startDraw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
         const pos = getPos(e);
         setPoints([pos]);
         setIsDrawing(true);
@@ -66,7 +66,7 @@ export default function KanjiCanvas() {
         setPoints([]);
     };
 
-    const draw = (e) => {
+    const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
         if (!isDrawing) return;
         const ctx = canvasRef.current!.getContext("2d")!;
         const pos = getPos(e);
