@@ -1,0 +1,1 @@
+{"name":"Kanji Area","short_name":"Kanji Area","description":"Practice strike order and handwriting on this area.","start_url":"/kanji-area/","display":"standalone","background_color":"#ffffff","theme_color":"#000000","lang":"en","scope":"/kanji-area/","icons":[{"src":"/kanji.png","sizes":"192x192","type":"image/png"},{"src":"/kanji.png","sizes":"512x512","type":"image/png"}]}
