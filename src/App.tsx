@@ -1,11 +1,16 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import KanjiCanvas from "./KanjiCanvas";
+import { CiDark, CiLight } from "react-icons/ci";
 
 export default function App() {
-
-    const [lineWidth, setLineWidth] = useState(() => Number(localStorage.getItem("lineWidth")) || 3);
-    const [color, setColor] = useState(() => localStorage.getItem("color") || "black");
+    const [lineWidth, setLineWidth] = useState(
+        () => Number(localStorage.getItem("lineWidth")) || 3
+    );
+    const [color, setColor] = useState(
+        () => localStorage.getItem("color") || "black"
+    );
     const [isCanvasClear, setIsCanvasClear] = useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
 
     const pageStyle: CSSProperties = {
         height: "100dvh",
@@ -20,14 +25,22 @@ export default function App() {
         fontSize: "2.5rem",
         padding: "2rem 0 0",
     };
-    
+
     function clearCanvas() {
         setIsCanvasClear(true);
     }
-    
+
     useEffect(() => {
         setIsCanvasClear(false);
-    }, [isCanvasClear])
+    }, [isCanvasClear]);
+    
+    useEffect(() => {
+        if (isDarkTheme) {
+            document.body.style.backgroundColor = "black"
+        } else {
+            document.body.style.backgroundColor = "white"
+        }
+    }, [isDarkTheme])
 
     return (
         <div style={pageStyle}>
@@ -42,7 +55,11 @@ export default function App() {
                     justifyContent: "center",
                 }}
             >
-                <KanjiCanvas lineWidth={lineWidth} color={color} clear={isCanvasClear}/>
+                <KanjiCanvas
+                    lineWidth={lineWidth}
+                    color={color}
+                    clear={isCanvasClear}
+                />
                 <div
                     style={{
                         display: "flex",
@@ -55,11 +72,9 @@ export default function App() {
                         min="1"
                         max="30"
                         value={lineWidth}
-                        onChange={(e) =>
-                            (setLineWidth(Number(e.target.value)))
-                        }
+                        onChange={(e) => setLineWidth(Number(e.target.value))}
                     />
-                    <span>{lineWidth}px</span>
+                    <span style={{ color: isDarkTheme ? "#fff" : "#000"}}>{lineWidth}px</span>
                 </div>
                 <div
                     style={{
@@ -73,7 +88,7 @@ export default function App() {
                         value={color}
                         onChange={(e) => setColor(e.target.value)}
                     />
-                    <span>{color}</span>
+                    <span style={{ color: isDarkTheme ? "#fff" : "#000"}}>{color}</span>
                 </div>
                 <button
                     style={{
@@ -88,6 +103,26 @@ export default function App() {
                     onClick={clearCanvas}
                 >
                     Clear
+                </button>
+                <button
+                    style={{
+                        position: "absolute",
+                        bottom: "1rem",
+                        right: "1rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "2.5rem",
+                        height: "2.5rem",
+                        borderRadius: "50%",
+                        fontSize: "1.3rem",
+                        color: isDarkTheme ? "#fff" : "#000",
+                        backgroundColor: isDarkTheme ? "#000" : "#fff",
+                        border: `1px solid ${isDarkTheme ? "#fff" : "#000"}`,
+                    }}
+                    onClick={() => setIsDarkTheme((theme) => !theme)}
+                >
+                    {isDarkTheme ? <CiLight /> : <CiDark />}
                 </button>
             </div>
         </div>
