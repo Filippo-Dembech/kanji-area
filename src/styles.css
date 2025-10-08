@@ -6,6 +6,11 @@
 
 body {
     font-family: monospace;
+    background: black;
+}
+
+canvas {
+  touch-action: none;
 }
 
 /* Base slider */
