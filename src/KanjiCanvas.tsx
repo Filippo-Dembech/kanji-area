@@ -211,53 +211,8 @@ export default function KanjiCanvas({ lineWidth, color, clear }: KanjiCanvasProp
     const isDrawing = useRef(false);
     const points = useRef<{ x: number; y: number }[]>([]);
 
-    useEffect(() => {
-        const canvas = canvasRef.current!;
-        const ctx = canvas.getContext("2d")!;
-        canvas.width = 300;
-        canvas.height = 300;
-        drawGrid(ctx);
-        const canvasCurrent = canvasRef.current;
-        if (!canvasCurrent) return;
 
-        const preventDefault = (e: TouchEvent) => e.preventDefault();
-
-        // Prevent scrolling when touching the canvas
-        canvasCurrent.addEventListener("touchstart", preventDefault, {
-            passive: false,
-        });
-        canvasCurrent.addEventListener("touchmove", preventDefault, {
-            passive: false,
-        });
-
-        return () => {
-            canvasCurrent.removeEventListener("touchstart", preventDefault);
-            canvasCurrent.removeEventListener("touchmove", preventDefault);
-        };
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("lineWidth", String(lineWidth));
-    }, [lineWidth]);
-
-    useEffect(() => {
-        localStorage.setItem("color", color);
-    }, [color]);
-
-    const clearCanvas = () => {
-        const canvas = canvasRef.current!;
-        const ctx = canvas.getContext("2d")!;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawGrid(ctx);
-    };
-
-    useEffect(() => {
-        if (clear) {
-            clearCanvas()
-        }
-    }, [clear])
-
-    const drawGrid = (ctx: CanvasRenderingContext2D) => {
+    const drawGrid = React.useCallback((ctx: CanvasRenderingContext2D) => {
         ctx.strokeStyle = "#ddd";
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -266,7 +221,21 @@ export default function KanjiCanvas({ lineWidth, color, clear }: KanjiCanvasProp
         ctx.moveTo(0, 150);
         ctx.lineTo(300, 150);
         ctx.stroke();
-    };
+    }, []);
+
+    const clearCanvas = React.useCallback(() => {
+        const canvas = canvasRef.current!;
+        const ctx = canvas.getContext("2d")!;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid(ctx);
+    }, [drawGrid]);
+
+    useEffect(() => {
+        if (clear) {
+            clearCanvas()
+        }
+    }, [clear, clearCanvas])
+
 
     const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
         const rect = canvasRef.current!.getBoundingClientRect();
@@ -302,7 +271,6 @@ export default function KanjiCanvas({ lineWidth, color, clear }: KanjiCanvasProp
         ctx.lineJoin = "round";
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = color;
-        ctx.imageSmoothingEnabled = false;
 
         // take last 4 points for Catmull-Rom interpolation
         const [p0, p1, p2, p3] = points.current.slice(-4);
@@ -319,6 +287,39 @@ export default function KanjiCanvas({ lineWidth, color, clear }: KanjiCanvasProp
         ctx.stroke();
 
     };
+
+    useEffect(() => {
+        const canvas = canvasRef.current!;
+        const ctx = canvas.getContext("2d")!;
+        canvas.width = 300;
+        canvas.height = 300;
+        drawGrid(ctx);
+        const canvasCurrent = canvasRef.current;
+        if (!canvasCurrent) return;
+
+        const preventDefault = (e: TouchEvent) => e.preventDefault();
+
+        // Prevent scrolling when touching the canvas
+        canvasCurrent.addEventListener("touchstart", preventDefault, {
+            passive: false,
+        });
+        canvasCurrent.addEventListener("touchmove", preventDefault, {
+            passive: false,
+        });
+
+        return () => {
+            canvasCurrent.removeEventListener("touchstart", preventDefault);
+            canvasCurrent.removeEventListener("touchmove", preventDefault);
+        };
+    }, [drawGrid]);
+
+    useEffect(() => {
+        localStorage.setItem("lineWidth", String(lineWidth));
+    }, [lineWidth]);
+
+    useEffect(() => {
+        localStorage.setItem("color", color);
+    }, [color]);
 
 
     return (
